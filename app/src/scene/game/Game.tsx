@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
@@ -70,6 +70,11 @@ const NavigatorGame = () => {
     const clickedWord = words.find((w) => w.word === word);
     //help to find the current user's team
     const currentTeam = users.find((user) => user.name === roomData.name).team;
+
+    if (clickedWord.teams === "teamD") {
+      setGameOver(true);
+      setTeam(null);
+    }
 
     if (clickedWord.teams === currentTeam.team) {
       setScore((prevScore) => prevScore + 1);
