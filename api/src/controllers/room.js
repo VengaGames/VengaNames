@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { getRooms, removeUser, getUsersInRoom, getCurrentPlayerTurn } = require("../utils/users");
-//const { setStack } = require("../utils/cards");
 
 router.get("/", async (req, res) => {
   try {

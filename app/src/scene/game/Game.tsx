@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import useSocket from "../../hook/socket";
 
 const NavigatorGame = () => {
@@ -72,8 +72,7 @@ const NavigatorGame = () => {
     const currentTeam = users.find((user) => user.name === roomData.name).team;
 
     if (clickedWord.teams === "teamD") {
-      setGameOver(true);
-      setTeam(null);
+      handleEndGame();
     }
 
     if (clickedWord.teams === currentTeam.team) {
@@ -81,6 +80,14 @@ const NavigatorGame = () => {
     } else {
       setScore((prevScore) => prevScore - 1);
     }
+  };
+
+  const checkTeam = (word) => {
+    socket.emit("check-Team", (res) => {
+      console.log("checkTeam", res);
+      if (!res.ok) return toast.error(res.error);
+      handleClick(word);
+    });
   };
 
   const handleEndGame = () => {
@@ -95,43 +102,51 @@ const NavigatorGame = () => {
   };
 
   return (
-    <div className="text-white">
-      <h1>VengaNames</h1>
+    <div className="text-white max-h-fit">
+      <div className="flex justify-center">
+        <h1 className="text-4xl font-extrabold">VengaNames</h1>
+      </div>
 
       {teams ? (
         <p>Team: {teams}</p>
       ) : (
-        <div>
-          <button
-            className="border bg-blue-500"
-            onClick={() => {
-              joinTeam("teamA");
-            }}
-          >
-            Join Team A
-          </button>
-          <button
-            className="border bg-red-500"
-            onClick={() => {
-              console.log(teams);
-              joinTeam("teamB");
-            }}
-          >
-            Join Team B
-          </button>
+        <div className="flow-root">
+          <div className="float-left">
+            <button
+              className="border bg-blue-500"
+              onClick={() => {
+                joinTeam("teamA");
+              }}
+            >
+              Join Team A
+            </button>
+          </div>
+          <div className="float-right">
+            <button
+              className="border bg-red-500"
+              onClick={() => {
+                console.log(teams);
+                joinTeam("teamB");
+              }}
+            >
+              Join Team B
+            </button>
+          </div>
         </div>
       )}
 
       <p>Score: {score}</p>
       {!gameOver ? (
-        <div>
+        <div className="ml-32 mr-32">
           <h2>Words:</h2>
-          <ul className="grid grid-cols-5 gap-4">
+          <ul className="grid grid-cols-5 gap-4 h-2/5">
             {words.map((word, index) => (
               <li
                 key={index}
-                onClick={() => handleClick(word.word)}
-                className={`p-4 text-center ${
+                onClick={() => {
+                  checkTeam(word.word);
+                }}
+                className={`flex items-center justify-center h-32 rounded-lg cursor-pointer ${
                   word.teams === "teamA"
                     ? "bg-blue-500"
                     : word.teams === "teamB"
@@ -141,7 +156,7 @@ const NavigatorGame = () => {
                     : "bg-black"
                 }`}
               >
-                <Card sx={{ maxWidth: 200 }}>
+                <Card sx={{ maxWidth: 75 }}>
                   <CardActionArea>
                     <CardContent>
                       <Typography
@@ -158,7 +173,6 @@ const NavigatorGame = () => {
               </li>
             ))}
           </ul>
-          <button onClick={handleEndGame}>End Game</button>
         </div>
       ) : (
         <p>Game Over!</p>
@@ -166,5 +180,6 @@ const NavigatorGame = () => {
     </div>
   );
 };
+//<button onClick={handleEndGame}>End Game</button>
 
 export default NavigatorGame;
