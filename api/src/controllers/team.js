@@ -23,6 +23,7 @@ roomController.handleSocket = (socket, io) => {
 
       const TeamOk = isTeamSet(user);
       if (!TeamOk.ok) return callback(TeamOk);
+      if (callback) callback({ ok: true });
     } catch (error) {
       console.log(error);
     }
